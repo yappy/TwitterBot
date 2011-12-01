@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -53,14 +54,14 @@ public class Alice {
 
 	public static void main(String[] args) {
 		Date nowDate = new Date();
-		String nowStr = String.format("%1$tY%1$tm%1$td_%1$tH%1$tM%1$tS",
-				nowDate);
+		String nowStr = String.format("%1$tY%1$tm%1$td", nowDate);
 
 		File logDir = new File("log");
 		logDir.mkdir();
 		String logFileName = nowStr + ".log";
 		try {
-			logOut = new PrintWriter(new File(logDir, logFileName));
+			logOut = new PrintWriter(new FileWriter(new File(logDir,
+					logFileName), true));
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -69,6 +70,8 @@ public class Alice {
 
 		saySomething();
 
+		logOut.println("Exit.");
+		logOut.println();
 		logOut.close();
 	}
 
