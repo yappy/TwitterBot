@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     2011/12/02 1:52:35                                                        
+
+     TwitterBot    
+     Alice bot
+                   
+     yappy                                                                
+     ====================================================================== -->
+<project name="TwitterBot" default="default">
+	<description>
+            Alice bot
+    </description>
+
+	<property name="compile.cp" value="twitter4j-core-2.2.5.jar;mt.jar" />
+	<property name="jar.cp" value="twitter4j-core-2.2.5.jar mt.jar" />
+
+	<target name="default" depends="jar" description="Alice bot">
+	</target>
+
+	<target name="rebuild" depends="clean, jar">
+	</target>
+
+	<target name="compile">
+		<mkdir dir="bin" />
+		<javac srcdir="src" destdir="bin" classpath="${compile.cp}" includeantruntime="false" />
+	</target>
+
+	<target name="jar" depends="compile">
+		<jar destfile="alice.jar" basedir="bin">
+			<manifest>
+				<attribute name="Main-Class" value="Alice" />
+				<attribute name="Class-Path" value="${jar.cp}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="clean" depends="compile">
+		<delete dir="bin" />
+		<delete file="alice.jar" />
+	</target>
+
+</project>
