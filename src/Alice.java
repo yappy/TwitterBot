@@ -13,9 +13,11 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 
-// for crontab
-// * * * * * cd ~/workspace/Twitter; /usr/java/default/bin/java -cp bin Alice
-
+/**
+ * Alice bot.
+ * 
+ * @author yappy
+ */
 public class Alice {
 
 	private static final String TWEET_FILE_NAME = "list.txt";
