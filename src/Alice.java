@@ -1,17 +1,18 @@
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
-import ec.util.MersenneTwisterFast;
-
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import ec.util.MersenneTwisterFast;
 
 /**
  * Alice bot.
@@ -62,8 +63,9 @@ public class Alice {
 		logDir.mkdir();
 		String logFileName = nowStr + ".log";
 		try {
-			logOut = new PrintWriter(new FileWriter(new File(logDir,
-					logFileName), true));
+			Writer w = new OutputStreamWriter(new FileOutputStream(new File(
+					logDir, logFileName), true), "UTF-8");
+			logOut = new PrintWriter(w);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -76,5 +78,4 @@ public class Alice {
 		logOut.println();
 		logOut.close();
 	}
-
 }
