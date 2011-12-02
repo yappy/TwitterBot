@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Scanner;
 
 import twitter4j.IDs;
+import twitter4j.Paging;
+import twitter4j.Status;
+import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -26,33 +29,31 @@ public class Alice {
 
 	private static final String TWEET_FILE_NAME = "list.txt";
 
+	private static MersenneTwisterFast mt = new MersenneTwisterFast();
 	private static PrintWriter logOut;
 	private static Twitter twitter;
+	private static List<String> dataList;
+
+	private static List<String> loadList() throws IOException {
+		Scanner in = new Scanner(new File(TWEET_FILE_NAME), "UTF-8");
+		List<String> list = new ArrayList<String>();
+		while (in.hasNextLine()) {
+			String line = in.nextLine();
+			if (!line.equals("") && !line.startsWith("#")) {
+				list.add(line);
+			}
+		}
+		logOut.printf("List loaded (%d items)%n", list.size());
+		return list;
+	}
 
 	private static void saySomething() {
 		try {
-			Scanner in = new Scanner(new File(TWEET_FILE_NAME), "UTF-8");
-			List<String> list = new ArrayList<String>();
-			while (in.hasNextLine()) {
-				String line = in.nextLine();
-				if (!line.equals("") && !line.startsWith("#")) {
-					list.add(line);
-				}
-			}
-			logOut.printf("List loaded (%d items)%n", list.size());
+			int ind = mt.nextInt(dataList.size());
 
-			MersenneTwisterFast mt = new MersenneTwisterFast();
-			int first = mt.nextChar();
-			for (int i = 0; i < first; i++) {
-				mt.nextInt();
-			}
-			int ind = mt.nextInt(list.size());
-
-			String msg = list.get(ind);
+			String msg = dataList.get(ind);
 			twitter.updateStatus(msg);
 			logOut.println("tweet: " + msg);
-		} catch (IOException e) {
-			e.printStackTrace(logOut);
 		} catch (TwitterException e) {
 			e.printStackTrace(logOut);
 		}
@@ -103,21 +104,34 @@ public class Alice {
 		}
 	}
 
-	// TODO
 	/*
+	 * Notice: This method gets the latest tweet of myself. This method must be
+	 * called before tweeting anything.
+	 */
 	private static void autoReply() {
-		// 20 most recent mentions
-		List<Status> mentions;
 		try {
-			mentions = twitter.getMentions();
-			for (Status status : mentions) {
-				System.out.println(status.getText());
+			// last tweet id
+			List<Status> lastStatus = twitter.getUserTimeline(new Paging(1, 1));
+			long lastId = lastStatus.isEmpty() ? 0 : lastStatus.get(0).getId();
+			// 200 recent mentions since last tweet
+			List<Status> mentions;
+			mentions = twitter.getMentions(new Paging(1, 200, lastId));
+			for (Status ms : mentions) {
+				logOut.printf("Find new mention: %s%n", ms.getText());
+
+				int ind = mt.nextInt(dataList.size());
+				String msg = "@" + ms.getUser().getScreenName() + " "
+						+ dataList.get(ind);
+				StatusUpdate update = new StatusUpdate(msg)
+						.inReplyToStatusId(ms.getId());
+				twitter.updateStatus(update);
+
+				logOut.printf("Reply: %s%n", msg);
 			}
 		} catch (TwitterException e) {
 			e.printStackTrace(logOut);
 		}
 	}
-	*/
 
 	public static void main(String[] args) {
 		Date nowDate = new Date();
@@ -136,9 +150,15 @@ public class Alice {
 		}
 		logOut.printf("Start (%1$tF %1$tT)%n", nowDate);
 
-		twitter = new TwitterFactory().getInstance();
-		saySomething();
-		autoFollow();
+		try {
+			twitter = new TwitterFactory().getInstance();
+			dataList = loadList();
+			autoReply();
+			saySomething();
+			autoFollow();
+		} catch (Exception e) {
+			e.printStackTrace(logOut);
+		}
 
 		logOut.printf("End (%1$tF %1$tT)%n", System.currentTimeMillis());
 		logOut.println();
