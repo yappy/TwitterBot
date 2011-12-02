@@ -1,3 +1,4 @@
+# Fill followings and save as "twitter4j.properties"
 oauth.consumerKey=
 oauth.consumerSecret=
 oauth.accessToken=
