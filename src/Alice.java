@@ -47,7 +47,6 @@ public class Alice {
 				list.add(line);
 			}
 		}
-		logOut.printf("List loaded (%d items)%n", list.size());
 		return list;
 	}
 
@@ -172,14 +171,19 @@ public class Alice {
 		try {
 			twitter = new TwitterFactory().getInstance();
 			dataList = loadList();
+			logOut.printf("List loaded (%d items)%n", dataList.size());
 			myRecents = twitter.getUserTimeline(new Paging(1, 10));
+			logOut.printf("Get user timeline (%d)%n", myRecents.size());
 			if (!argSet.remove("--disable-auto-reply")) {
+				logOut.println("Auto reply");
 				autoReply();
 			}
 			if (!argSet.remove("--disable-random-tweet")) {
+				logOut.println("Random tweet");
 				randomTweet();
 			}
 			if (!argSet.remove("--disable-auto-follow")) {
+				logOut.println("Auto follow");
 				autoFollow();
 			}
 			for (String arg : argSet) {
