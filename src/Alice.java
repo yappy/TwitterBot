@@ -7,8 +7,10 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 import twitter4j.IDs;
 import twitter4j.Paging;
@@ -27,9 +29,9 @@ import ec.util.MersenneTwisterFast;
  */
 public class Alice {
 
-	private static final boolean RANDOM_TWEET = false;
-	private static final boolean AUTO_FOLLOW = false;
-	private static final boolean AUTO_REPLY = false;
+	private static final boolean RANDOM_TWEET = true;
+	private static final boolean AUTO_FOLLOW = true;
+	private static final boolean AUTO_REPLY = true;
 
 	private static final String TWEET_FILE_NAME = "list.txt";
 
@@ -37,6 +39,7 @@ public class Alice {
 	private static PrintWriter logOut;
 	private static Twitter twitter;
 	private static List<String> dataList;
+	private static List<Status> myRecents;
 
 	private static List<String> loadList() throws IOException {
 		Scanner in = new Scanner(new File(TWEET_FILE_NAME), "UTF-8");
@@ -53,9 +56,18 @@ public class Alice {
 
 	private static void randomTweet() {
 		try {
-			int ind = mt.nextInt(dataList.size());
-
-			String msg = dataList.get(ind);
+			Set<String> recentSet = new HashSet<String>();
+			for (Status status : myRecents) {
+				recentSet.add(status.getText());
+			}
+			if (recentSet.size() >= dataList.size()) {
+				throw new IllegalStateException("dataList is too small");
+			}
+			String msg;
+			do {
+				int ind = mt.nextInt(dataList.size());
+				msg = dataList.get(ind);
+			} while (recentSet.contains(msg));
 			twitter.updateStatus(msg);
 			logOut.println("tweet: " + msg);
 		} catch (TwitterException e) {
@@ -115,8 +127,7 @@ public class Alice {
 	private static void autoReply() {
 		try {
 			// last tweet id
-			List<Status> lastStatus = twitter.getUserTimeline(new Paging(1, 1));
-			long lastId = lastStatus.isEmpty() ? 0 : lastStatus.get(0).getId();
+			long lastId = myRecents.isEmpty() ? 0 : myRecents.get(0).getId();
 			// 200 recent mentions since last tweet
 			List<Status> mentions;
 			mentions = twitter.getMentions(new Paging(1, 200, lastId));
@@ -157,6 +168,7 @@ public class Alice {
 		try {
 			twitter = new TwitterFactory().getInstance();
 			dataList = loadList();
+			myRecents = twitter.getUserTimeline(new Paging(1, 10));
 			if (AUTO_REPLY) {
 				autoReply();
 			}
