@@ -27,6 +27,10 @@ import ec.util.MersenneTwisterFast;
  */
 public class Alice {
 
+	private static final boolean RANDOM_TWEET = false;
+	private static final boolean AUTO_FOLLOW = false;
+	private static final boolean AUTO_REPLY = false;
+
 	private static final String TWEET_FILE_NAME = "list.txt";
 
 	private static MersenneTwisterFast mt = new MersenneTwisterFast();
@@ -47,7 +51,7 @@ public class Alice {
 		return list;
 	}
 
-	private static void saySomething() {
+	private static void randomTweet() {
 		try {
 			int ind = mt.nextInt(dataList.size());
 
@@ -153,9 +157,15 @@ public class Alice {
 		try {
 			twitter = new TwitterFactory().getInstance();
 			dataList = loadList();
-			autoReply();
-			saySomething();
-			autoFollow();
+			if (AUTO_REPLY) {
+				autoReply();
+			}
+			if (RANDOM_TWEET) {
+				randomTweet();
+			}
+			if (AUTO_FOLLOW) {
+				autoFollow();
+			}
 		} catch (Exception e) {
 			e.printStackTrace(logOut);
 		}
