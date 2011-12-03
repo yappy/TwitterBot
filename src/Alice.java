@@ -5,6 +5,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -28,10 +29,6 @@ import ec.util.MersenneTwisterFast;
  * @author yappy
  */
 public class Alice {
-
-	private static final boolean RANDOM_TWEET = true;
-	private static final boolean AUTO_FOLLOW = true;
-	private static final boolean AUTO_REPLY = true;
 
 	private static final String TWEET_FILE_NAME = "list.txt";
 
@@ -148,10 +145,17 @@ public class Alice {
 		}
 	}
 
+	/**
+	 * 
+	 * @param args
+	 *            --disable-auto-reply --disable-random-tweet
+	 *            --disable-auto-follow
+	 */
 	public static void main(String[] args) {
+		Set<String> argSet = new HashSet<String>(Arrays.asList(args));
+
 		Date nowDate = new Date();
 		String nowStr = String.format("%1$tY%1$tm%1$td", nowDate);
-
 		File logDir = new File("log");
 		logDir.mkdir();
 		String logFileName = nowStr + ".log";
@@ -169,14 +173,17 @@ public class Alice {
 			twitter = new TwitterFactory().getInstance();
 			dataList = loadList();
 			myRecents = twitter.getUserTimeline(new Paging(1, 10));
-			if (AUTO_REPLY) {
+			if (!argSet.remove("--disable-auto-reply")) {
 				autoReply();
 			}
-			if (RANDOM_TWEET) {
+			if (!argSet.remove("--disable-random-tweet")) {
 				randomTweet();
 			}
-			if (AUTO_FOLLOW) {
+			if (!argSet.remove("--disable-auto-follow")) {
 				autoFollow();
+			}
+			for (String arg : argSet) {
+				logOut.println("Warning: unknown argument " + arg);
 			}
 		} catch (Exception e) {
 			e.printStackTrace(logOut);
