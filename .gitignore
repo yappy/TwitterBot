@@ -1,4 +1,4 @@
-bin
-log
+bin/
+log/
 twitter4j.properties
 alice.jar
