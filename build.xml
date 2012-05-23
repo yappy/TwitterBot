@@ -18,7 +18,7 @@
 	<target name="default" depends="jar" description="Alice bot">
 	</target>
 
-	<target name="rebuild" depends="clean, jar">
+	<target name="rebuild" depends="clean,jar">
 	</target>
 
 	<target name="compile">
@@ -35,7 +35,7 @@
 		</jar>
 	</target>
 
-	<target name="clean" depends="compile">
+	<target name="clean">
 		<delete dir="bin" />
 		<delete file="alice.jar" />
 	</target>
