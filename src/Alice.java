@@ -31,6 +31,7 @@ import ec.util.MersenneTwisterFast;
 public class Alice {
 
 	private static final String TWEET_FILE_NAME = "list.txt";
+	private static final int TWEET_MAX = 140;
 
 	private static MersenneTwisterFast mt = new MersenneTwisterFast();
 	private static PrintWriter logOut;
@@ -44,6 +45,9 @@ public class Alice {
 		while (in.hasNextLine()) {
 			String line = in.nextLine();
 			if (!line.equals("") && !line.startsWith("#")) {
+				if (line.length() > TWEET_MAX) {
+					logOut.println("Warning: 140 chars over(" + line + ")");
+				}
 				list.add(line);
 			}
 		}
