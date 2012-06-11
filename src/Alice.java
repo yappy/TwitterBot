@@ -148,23 +148,53 @@ public class Alice {
 		}
 	}
 
+	private static void itweet() {
+		Scanner in = new Scanner(System.in);
+		for (int i = 0; i < dataList.size(); i++) {
+			System.out.printf("%d: %s%n", i, dataList.get(i));
+		}
+		System.out.println();
+		System.out.printf("Input message No(0..%d)%n", dataList.size() - 1);
+		System.out.println("(Quit to -1)");
+		int no = -1;
+		if (in.hasNextInt()) {
+			no = in.nextInt();
+		}
+		if (no < 0 || no >= dataList.size()) {
+			System.out.println("Quit.");
+			return;
+		}
+		String msg = dataList.get(no);
+		System.out.printf("%d: %s%n", no, msg);
+		System.out.println("OK? (y/n)");
+		if (!in.next().startsWith("y")) {
+			System.out.println("Quit.");
+			return;
+		}
+		try {
+			twitter.updateStatus(msg);
+			printlnBoth("tweet: " + msg);
+		} catch (TwitterException e) {
+			e.printStackTrace(System.out);
+			e.printStackTrace(logOut);
+		}
+	}
+
 	private static void help() {
 		System.out.println("--help");
 		System.out.println("\tPrint this help.");
+
 		System.out.println("--auto-reply");
 		System.out.println("\tFind new @me and reply to it.");
 		System.out.println("--random-tweet");
 		System.out.println("\tTweet from list.txt at random.");
 		System.out.println("--auto-follow");
 		System.out.println("\tCheck follow status and auto follow/unfollow.");
+
+		System.out.println("--itweet");
+		System.out.println("\tInteractive tweet mode.");
 	}
 
-	/**
-	 * main method.
-	 * 
-	 * @param args
-	 *            --auto-reply --random-tweet --auto-follow
-	 */
 	public static void main(String[] args) {
 		Set<String> argSet = new HashSet<String>(Arrays.asList(args));
 
@@ -198,6 +228,10 @@ public class Alice {
 			myRecents = twitter.getUserTimeline(new Paging(1, 10));
 			logOut.printf("Get user timeline (%d)%n", myRecents.size());
 
+			if (argSet.remove("--itweet")) {
+				logOut.println("Interactive tweet mode.");
+				itweet();
+			}
 			if (argSet.remove("--auto-reply")) {
 				logOut.println("Auto reply");
 				autoReply();
