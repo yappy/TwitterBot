@@ -1,3 +1,3 @@
 # redirect to crontab
-0 * * * * cd ~/workspace/TwitterBot; /usr/bin/java -jar alice.jar
-5-55/5 * * * * cd ~/workspace/TwitterBot; /usr/bin/java -jar alice.jar --disable-random-tweet
+0 * * * * cd ~/workspace/TwitterBot; /usr/bin/java -jar alice.jar --auto-reply --random-tweet --auto-follow
+5-55/5 * * * * cd ~/workspace/TwitterBot; /usr/bin/java -jar alice.jar --auto-reply --auto-follow

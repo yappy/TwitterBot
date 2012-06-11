@@ -148,11 +148,22 @@ public class Alice {
 		}
 	}
 
+	private static void help() {
+		System.out.println("--help");
+		System.out.println("\tPrint this help.");
+		System.out.println("--auto-reply");
+		System.out.println("\tFind new @me and reply to it.");
+		System.out.println("--random-tweet");
+		System.out.println("\tTweet from list.txt at random.");
+		System.out.println("--auto-follow");
+		System.out.println("\tCheck follow status and auto follow/unfollow.");
+	}
+
 	/**
+	 * main method.
 	 * 
 	 * @param args
-	 *            --disable-auto-reply --disable-random-tweet
-	 *            --disable-auto-follow
+	 *            --auto-reply --random-tweet --auto-follow
 	 */
 	public static void main(String[] args) {
 		Set<String> argSet = new HashSet<String>(Arrays.asList(args));
@@ -173,25 +184,34 @@ public class Alice {
 		logOut.printf("Start (%1$tF %1$tT)%n", nowDate);
 
 		try {
+			if (argSet.isEmpty()) {
+				printlnBoth("No arguments. Use --help.");
+			}
+			if (argSet.remove("--help")) {
+				logOut.println("Help");
+				help();
+			}
+
 			twitter = new TwitterFactory().getInstance();
 			dataList = loadList();
 			logOut.printf("List loaded (%d items)%n", dataList.size());
 			myRecents = twitter.getUserTimeline(new Paging(1, 10));
 			logOut.printf("Get user timeline (%d)%n", myRecents.size());
-			if (!argSet.remove("--disable-auto-reply")) {
+
+			if (argSet.remove("--auto-reply")) {
 				logOut.println("Auto reply");
 				autoReply();
 			}
-			if (!argSet.remove("--disable-random-tweet")) {
+			if (argSet.remove("--random-tweet")) {
 				logOut.println("Random tweet");
 				randomTweet();
 			}
-			if (!argSet.remove("--disable-auto-follow")) {
+			if (argSet.remove("--auto-follow")) {
 				logOut.println("Auto follow");
 				autoFollow();
 			}
 			for (String arg : argSet) {
-				logOut.println("Warning: unknown argument " + arg);
+				printlnBoth("Warning: unknown argument " + arg);
 			}
 		} catch (Exception e) {
 			e.printStackTrace(logOut);
@@ -201,4 +221,13 @@ public class Alice {
 		logOut.println();
 		logOut.close();
 	}
+
+	/*
+	 * println to System.out and logOut
+	 */
+	private static void printlnBoth(String msg) {
+		System.out.println(msg);
+		logOut.println(msg);
+	}
+
 }
