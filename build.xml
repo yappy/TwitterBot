@@ -14,6 +14,9 @@
 
 	<property name="compile.cp" value="twitter4j-core-2.2.5.jar;mt.jar" />
 	<property name="jar.cp" value="twitter4j-core-2.2.5.jar mt.jar" />
+	<property name="jar.name" value="alice.jar" />
+	<property name="src.dir" value="src" />
+	<property name="bin.dir" value="bin" />
 
 	<target name="default" depends="jar" description="Alice bot">
 	</target>
@@ -22,12 +25,12 @@
 	</target>
 
 	<target name="compile">
-		<mkdir dir="bin" />
-		<javac srcdir="src" destdir="bin" classpath="${compile.cp}" includeantruntime="false" />
+		<mkdir dir="${bin.dir}" />
+		<javac srcdir="${src.dir}" destdir="${bin.dir}" classpath="${compile.cp}" includeantruntime="false" />
 	</target>
 
 	<target name="jar" depends="compile">
-		<jar destfile="alice.jar" basedir="bin">
+		<jar destfile="${jar.name}" basedir="${bin.dir}">
 			<manifest>
 				<attribute name="Main-Class" value="Alice" />
 				<attribute name="Class-Path" value="${jar.cp}" />
@@ -36,8 +39,8 @@
 	</target>
 
 	<target name="clean">
-		<delete dir="bin" />
-		<delete file="alice.jar" />
+		<delete dir="${bin.dir}" />
+		<delete file="${jar.name}" />
 	</target>
 
 </project>
