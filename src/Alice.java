@@ -247,7 +247,7 @@ public class Alice {
 
 		try {
 			if (argSet.isEmpty()) {
-				printlnBoth("No arguments. Use --help.");
+				printlnBoth("No options. Use --help.");
 			}
 			if (argSet.remove("--help")) {
 				logOut.println("Help");
