@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- ====================================================================== 
-     2011/12/02 1:52:35                                                        
+<!-- ======================================================================
+     2011/12/02 1:52:35
 
-     TwitterBot    
+     TwitterBot
      Alice bot
-                   
-     yappy                                                                
+
+     yappy
      ====================================================================== -->
 <project name="TwitterBot" default="default">
 	<description>
@@ -18,10 +18,10 @@
 	<property name="src.dir" value="src" />
 	<property name="bin.dir" value="bin" />
 
-	<target name="default" depends="jar" description="Alice bot">
+	<target name="default" depends="jar" description="default build">
 	</target>
 
-	<target name="rebuild" depends="clean,jar">
+	<target name="rebuild" depends="clean,jar" description="clean and build">
 	</target>
 
 	<target name="compile">
@@ -38,7 +38,7 @@
 		</jar>
 	</target>
 
-	<target name="clean">
+	<target name="clean" description="clean">
 		<delete dir="${bin.dir}" />
 		<delete file="${jar.name}" />
 	</target>
