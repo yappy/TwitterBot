@@ -34,6 +34,7 @@ public class Alice {
 	private static final int TWEET_MAX = 140;
 
 	private static MersenneTwisterFast mt = new MersenneTwisterFast();
+	private static Scanner sin;
 	private static PrintWriter logOut;
 	private static Twitter twitter;
 	private static List<String> dataList;
@@ -46,7 +47,8 @@ public class Alice {
 			String line = in.nextLine();
 			if (!line.equals("") && !line.startsWith("#")) {
 				if (line.length() > TWEET_MAX) {
-					logOut.println("Warning: 140 chars over(" + line + ")");
+					logOut.printf("Warning: %d chars over(%s)%n", TWEET_MAX,
+							line);
 				}
 				list.add(line);
 			}
@@ -149,7 +151,6 @@ public class Alice {
 	}
 
 	private static void itweet() {
-		Scanner in = new Scanner(System.in);
 		for (int i = 0; i < dataList.size(); i++) {
 			System.out.printf("%d: %s%n", i, dataList.get(i));
 		}
@@ -157,8 +158,8 @@ public class Alice {
 		System.out.printf("Input message No(0..%d)%n", dataList.size() - 1);
 		System.out.println("(Quit to -1)");
 		int no = -1;
-		if (in.hasNextInt()) {
-			no = in.nextInt();
+		if (sin.hasNextInt()) {
+			no = sin.nextInt();
 		}
 		if (no < 0 || no >= dataList.size()) {
 			System.out.println("Quit.");
@@ -166,8 +167,35 @@ public class Alice {
 		}
 		String msg = dataList.get(no);
 		System.out.printf("%d: %s%n", no, msg);
+		if (msg.length() > TWEET_MAX) {
+			logOut.printf("Warning: %d chars over(%s)%n", TWEET_MAX, msg);
+		}
 		System.out.println("OK? (y/n)");
-		if (!in.next().startsWith("y")) {
+		if (!sin.next().startsWith("y")) {
+			System.out.println("Quit.");
+			return;
+		}
+		try {
+			twitter.updateStatus(msg);
+			printlnBoth("tweet: " + msg);
+		} catch (TwitterException e) {
+			e.printStackTrace(System.out);
+			e.printStackTrace(logOut);
+		}
+	}
+
+	private static void mtweet() {
+		System.out.println("Manual tweet mode OK? (y/n)");
+		if (!sin.next().startsWith("y")) {
+			System.out.println("Quit.");
+			return;
+		}
+		System.out.println("Input message:");
+		sin.nextLine();
+		String msg = sin.nextLine();
+		System.out.printf("Msg: %s%n", msg);
+		System.out.println("OK? (y/n)");
+		if (!sin.next().startsWith("y")) {
 			System.out.println("Quit.");
 			return;
 		}
@@ -193,10 +221,14 @@ public class Alice {
 
 		System.out.println("--itweet");
 		System.out.println("\tInteractive tweet mode.");
+		System.out.println("--mtweet");
+		System.out.println("\tManual tweet mode.");
 	}
 
 	public static void main(String[] args) {
 		Set<String> argSet = new HashSet<String>(Arrays.asList(args));
+
+		sin = new Scanner(System.in);
 
 		Date nowDate = new Date();
 		String nowStr = String.format("%1$tY%1$tm%1$td", nowDate);
@@ -231,6 +263,10 @@ public class Alice {
 			if (argSet.remove("--itweet")) {
 				logOut.println("Interactive tweet mode.");
 				itweet();
+			}
+			if (argSet.remove("--mtweet")) {
+				logOut.println("Manual tweet mode.");
+				mtweet();
 			}
 			if (argSet.remove("--auto-reply")) {
 				logOut.println("Auto reply");
