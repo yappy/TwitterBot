@@ -15,8 +15,11 @@ import java.util.Set;
 
 import twitter4j.IDs;
 import twitter4j.Paging;
+import twitter4j.Query;
+import twitter4j.QueryResult;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
+import twitter4j.Tweet;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -142,6 +145,30 @@ public class Alice {
 				StatusUpdate update = new StatusUpdate(msg)
 						.inReplyToStatusId(ms.getId());
 				twitter.updateStatus(update);
+
+				logOut.printf("Reply: %s%n", msg);
+			}
+		} catch (TwitterException e) {
+			e.printStackTrace(logOut);
+		}
+	}
+
+	private static void search() {
+		try {
+			Query query = new Query("北斗");
+			QueryResult result = twitter.search(query);
+			List<Tweet> ts = result.getTweets();
+			if (!ts.isEmpty()) {
+				Tweet t = ts.get(0);
+
+				logOut.printf("Search and decided: %s%n", t.getText());
+
+				int ind = mt.nextInt(dataList.size());
+				String msg = "@" + t.getFromUser() + " " + dataList.get(ind);
+				StatusUpdate update = new StatusUpdate(msg).inReplyToStatusId(t
+						.getFromUserId());
+				// Caution!
+				// twitter.updateStatus(update);
 
 				logOut.printf("Reply: %s%n", msg);
 			}
@@ -279,6 +306,10 @@ public class Alice {
 			if (argSet.remove("--auto-follow")) {
 				logOut.println("Auto follow");
 				autoFollow();
+			}
+			if (argSet.remove("--search")) {
+				logOut.println("Search");
+				search();
 			}
 			for (String arg : argSet) {
 				printlnBoth("Warning: unknown argument " + arg);
