@@ -36,6 +36,7 @@ public class Alice {
 	private static final String TWEET_FILE_NAME = "list.txt";
 	private static final String REPLY_FILE_NAME = "reply.txt";
 	private static final int TWEET_MAX = 140;
+	private static final int SEARCH_RPP_MAX = 100;
 
 	private static MersenneTwisterFast mt = new MersenneTwisterFast();
 	private static Scanner sin;
@@ -167,24 +168,41 @@ public class Alice {
 
 	private static void search() {
 		try {
-			Query query = new Query("北斗");
+			Scanner in = new Scanner(new File("search.txt"));
+			List<String> words = new ArrayList<String>();
+			while (in.hasNextLine()) {
+				String line = in.nextLine();
+				if (!line.equals("") && !line.startsWith("#")) {
+					words.add(line);
+				}
+			}
+			if (words.isEmpty()) {
+				logOut.println("Search query does not exist.");
+				return;
+			}
+
+			Query query = new Query(words.get(0)).rpp(SEARCH_RPP_MAX);
 			QueryResult result = twitter.search(query);
 			List<Tweet> ts = result.getTweets();
-			System.out.println(ts.size());
-			if (!ts.isEmpty()) {
-				Tweet t = ts.get(0);
-
-				logOut.printf("Search and decided: %s%n", t.getText());
-
-				int ind = mt.nextInt(tweetList.size());
-				String msg = "@" + t.getFromUser() + " " + tweetList.get(ind);
-				StatusUpdate update = new StatusUpdate(msg).inReplyToStatusId(t
-						.getFromUserId());
-				// Caution!
-				// twitter.updateStatus(update);
-
-				logOut.printf("Reply: %s%n", msg);
+			for (Tweet t : ts) {
+				System.out.println(t.getText());
 			}
+			// if (!ts.isEmpty()) {
+			// Tweet t = ts.get(0);
+			//
+			// logOut.printf("Search and decided: %s%n", t.getText());
+			//
+			// int ind = mt.nextInt(tweetList.size());
+			// String msg = "@" + t.getFromUser() + " " + tweetList.get(ind);
+			// StatusUpdate update = new StatusUpdate(msg).inReplyToStatusId(t
+			// .getFromUserId());
+			// // Caution!
+			// // twitter.updateStatus(update);
+			//
+			// logOut.printf("Reply: %s%n", msg);
+			// }
+		} catch (IOException e) {
+			e.printStackTrace(logOut);
 		} catch (TwitterException e) {
 			e.printStackTrace(logOut);
 		}
