@@ -247,6 +247,9 @@ public class Alice {
 					}
 				}
 			}
+			for (Tweet t : hitList) {
+				System.out.println(t.getText());
+			}
 			// if (!ts.isEmpty()) {
 			// Tweet t = ts.get(0);
 			//
