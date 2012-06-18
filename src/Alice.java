@@ -169,23 +169,37 @@ public class Alice {
 	private static void search() {
 		try {
 			Scanner in = new Scanner(new File("search.txt"));
-			List<String> words = new ArrayList<String>();
+			List<String> wordList = new ArrayList<String>();
 			while (in.hasNextLine()) {
 				String line = in.nextLine();
 				if (!line.equals("") && !line.startsWith("#")) {
-					words.add(line);
+					wordList.add(line);
 				}
 			}
-			if (words.isEmpty()) {
+			if (wordList.isEmpty()) {
 				logOut.println("Search query does not exist.");
 				return;
 			}
 
-			Query query = new Query(words.get(0)).rpp(SEARCH_RPP_MAX);
+			// last tweet id
+			long lastId = myRecents.isEmpty() ? 0 : myRecents.get(0).getId();
+			// first line: search query
+			Query query = new Query(wordList.get(0)).rpp(SEARCH_RPP_MAX)
+					.sinceId(lastId);
 			QueryResult result = twitter.search(query);
-			List<Tweet> ts = result.getTweets();
-			for (Tweet t : ts) {
+			List<Tweet> hitList = new ArrayList<Tweet>();
+			for (Tweet t : result.getTweets()) {
 				System.out.println(t.getText());
+				// self tweet
+				if (t.getFromUserId() == twitter.getId())
+					continue;
+				String text = t.getText();
+				for (String word : wordList) {
+					if (text.indexOf(word) != -1) {
+						hitList.add(t);
+						break;
+					}
+				}
 			}
 			// if (!ts.isEmpty()) {
 			// Tweet t = ts.get(0);
