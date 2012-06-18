@@ -141,10 +141,6 @@ public class Alice {
 		}
 	}
 
-	/*
-	 * Notice: This method gets the latest tweet of myself. This method must be
-	 * called before tweeting anything.
-	 */
 	private static void autoReply() {
 		try {
 			// last tweet id
