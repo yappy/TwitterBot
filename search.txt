@@ -1,6 +1,5 @@
 アリス
 
-<<<<<<< HEAD
 近A
 遠A
 JA
@@ -17,5 +16,3 @@ DB
 DC
 @hisoutensokubot
 10800
-=======
->>>>>>> Get query from search.txt and list results.
