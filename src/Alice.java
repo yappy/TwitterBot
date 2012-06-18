@@ -34,18 +34,21 @@ import ec.util.MersenneTwisterFast;
 public class Alice {
 
 	private static final String TWEET_FILE_NAME = "list.txt";
+	private static final String REPLY_FILE_NAME = "reply.txt";
 	private static final int TWEET_MAX = 140;
 
 	private static MersenneTwisterFast mt = new MersenneTwisterFast();
 	private static Scanner sin;
 	private static PrintWriter logOut;
 	private static Twitter twitter;
-	private static List<String> dataList;
+	private static List<String> tweetList, replyList;
 	private static List<Status> myRecents;
 
-	private static List<String> loadList() throws IOException {
+	private static void loadList() throws IOException {
+		tweetList = new ArrayList<String>();
+		replyList = new ArrayList<String>();
+
 		Scanner in = new Scanner(new File(TWEET_FILE_NAME), "UTF-8");
-		List<String> list = new ArrayList<String>();
 		while (in.hasNextLine()) {
 			String line = in.nextLine();
 			if (!line.equals("") && !line.startsWith("#")) {
@@ -53,10 +56,23 @@ public class Alice {
 					logOut.printf("Warning: %d chars over(%s)%n", TWEET_MAX,
 							line);
 				}
-				list.add(line);
+				tweetList.add(line);
 			}
 		}
-		return list;
+		in = new Scanner(new File(REPLY_FILE_NAME), "UTF-8");
+		while (in.hasNextLine()) {
+			String line = in.nextLine();
+			if (!line.equals("") && !line.startsWith("#")) {
+				if (line.length() > TWEET_MAX) {
+					logOut.printf("Warning: %d chars over(%s)%n", TWEET_MAX,
+							line);
+				}
+				tweetList.add(line);
+				replyList.add(line);
+			}
+		}
+		logOut.printf("Tweet list loaded (%d items)%n", tweetList.size());
+		logOut.printf("Reply list loaded (%d items)%n", replyList.size());
 	}
 
 	private static void randomTweet() {
@@ -65,13 +81,13 @@ public class Alice {
 			for (Status status : myRecents) {
 				recentSet.add(status.getText());
 			}
-			if (recentSet.size() >= dataList.size()) {
+			if (recentSet.size() >= tweetList.size()) {
 				throw new IllegalStateException("dataList is too small");
 			}
 			String msg;
 			do {
-				int ind = mt.nextInt(dataList.size());
-				msg = dataList.get(ind);
+				int ind = mt.nextInt(tweetList.size());
+				msg = tweetList.get(ind);
 			} while (recentSet.contains(msg));
 			twitter.updateStatus(msg);
 			logOut.println("tweet: " + msg);
@@ -139,9 +155,9 @@ public class Alice {
 			for (Status ms : mentions) {
 				logOut.printf("Find new mention: %s%n", ms.getText());
 
-				int ind = mt.nextInt(dataList.size());
+				int ind = mt.nextInt(replyList.size());
 				String msg = "@" + ms.getUser().getScreenName() + " "
-						+ dataList.get(ind);
+						+ replyList.get(ind);
 				StatusUpdate update = new StatusUpdate(msg)
 						.inReplyToStatusId(ms.getId());
 				twitter.updateStatus(update);
@@ -158,13 +174,14 @@ public class Alice {
 			Query query = new Query("北斗");
 			QueryResult result = twitter.search(query);
 			List<Tweet> ts = result.getTweets();
+			System.out.println(ts.size());
 			if (!ts.isEmpty()) {
 				Tweet t = ts.get(0);
 
 				logOut.printf("Search and decided: %s%n", t.getText());
 
-				int ind = mt.nextInt(dataList.size());
-				String msg = "@" + t.getFromUser() + " " + dataList.get(ind);
+				int ind = mt.nextInt(tweetList.size());
+				String msg = "@" + t.getFromUser() + " " + tweetList.get(ind);
 				StatusUpdate update = new StatusUpdate(msg).inReplyToStatusId(t
 						.getFromUserId());
 				// Caution!
@@ -178,21 +195,21 @@ public class Alice {
 	}
 
 	private static void itweet() {
-		for (int i = 0; i < dataList.size(); i++) {
-			System.out.printf("%d: %s%n", i, dataList.get(i));
+		for (int i = 0; i < tweetList.size(); i++) {
+			System.out.printf("%d: %s%n", i, tweetList.get(i));
 		}
 		System.out.println();
-		System.out.printf("Input message No(0..%d)%n", dataList.size() - 1);
+		System.out.printf("Input message No(0..%d)%n", tweetList.size() - 1);
 		System.out.println("(Quit to -1)");
 		int no = -1;
 		if (sin.hasNextInt()) {
 			no = sin.nextInt();
 		}
-		if (no < 0 || no >= dataList.size()) {
+		if (no < 0 || no >= tweetList.size()) {
 			System.out.println("Quit.");
 			return;
 		}
-		String msg = dataList.get(no);
+		String msg = tweetList.get(no);
 		System.out.printf("%d: %s%n", no, msg);
 		if (msg.length() > TWEET_MAX) {
 			logOut.printf("Warning: %d chars over(%s)%n", TWEET_MAX, msg);
@@ -282,8 +299,7 @@ public class Alice {
 			}
 
 			twitter = new TwitterFactory().getInstance();
-			dataList = loadList();
-			logOut.printf("List loaded (%d items)%n", dataList.size());
+			loadList();
 			myRecents = twitter.getUserTimeline(new Paging(1, 10));
 			logOut.printf("Get user timeline (%d)%n", myRecents.size());
 
