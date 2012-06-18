@@ -205,6 +205,16 @@ public class Alice {
 			}
 			for (Tweet t : hitList) {
 				System.out.println(t.getText());
+				// self tweet
+				if (t.getFromUserId() == twitter.getId())
+					continue;
+				String text = t.getText();
+				for (String word : wordList) {
+					if (text.indexOf(word) != -1) {
+						hitList.add(t);
+						break;
+					}
+				}
 			}
 			// if (!ts.isEmpty()) {
 			// Tweet t = ts.get(0);
