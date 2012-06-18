@@ -186,10 +186,10 @@ public class Alice {
 			// first line: search query
 			Query query = new Query(wordList.get(0)).rpp(SEARCH_RPP_MAX)
 					.sinceId(lastId);
+			wordList.remove(0);
 			QueryResult result = twitter.search(query);
 			List<Tweet> hitList = new ArrayList<Tweet>();
 			for (Tweet t : result.getTweets()) {
-				System.out.println(t.getText());
 				// self tweet
 				if (t.getFromUserId() == twitter.getId())
 					continue;
@@ -200,6 +200,9 @@ public class Alice {
 						break;
 					}
 				}
+			}
+			for (Tweet t : hitList) {
+				System.out.println(t.getText());
 			}
 			// if (!ts.isEmpty()) {
 			// Tweet t = ts.get(0);
