@@ -194,6 +194,8 @@ public class Alice {
 				if (t.getFromUserId() == twitter.getId())
 					continue;
 				String text = t.getText();
+				// delete mention (@xyz)
+				text = text.replaceAll("@\\w+", "");
 				for (String word : wordList) {
 					if (text.indexOf(word) != -1) {
 						hitList.add(t);
