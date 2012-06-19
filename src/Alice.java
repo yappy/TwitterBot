@@ -182,7 +182,8 @@ public class Alice {
 			}
 
 			// last tweet id
-			long lastId = myRecents.isEmpty() ? 0 : myRecents.get(0).getId();
+			// long lastId = myRecents.isEmpty() ? 0 : myRecents.get(0).getId();
+			long lastId = 0;
 			// first line: search query
 			Query query = new Query(wordList.get(0)).rpp(SEARCH_RPP_MAX)
 					.sinceId(lastId);
