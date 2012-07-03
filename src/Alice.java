@@ -207,20 +207,6 @@ public class Alice {
 			for (Tweet t : hitList) {
 				System.out.println(t.getText());
 			}
-			// if (!ts.isEmpty()) {
-			// Tweet t = ts.get(0);
-			//
-			// logOut.printf("Search and decided: %s%n", t.getText());
-			//
-			// int ind = mt.nextInt(tweetList.size());
-			// String msg = "@" + t.getFromUser() + " " + tweetList.get(ind);
-			// StatusUpdate update = new StatusUpdate(msg).inReplyToStatusId(t
-			// .getFromUserId());
-			// // Caution!
-			// // twitter.updateStatus(update);
-			//
-			// logOut.printf("Reply: %s%n", msg);
-			// }
 		} catch (IOException e) {
 			e.printStackTrace(logOut);
 		} catch (TwitterException e) {
