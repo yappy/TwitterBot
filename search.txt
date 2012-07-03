@@ -2,17 +2,19 @@
 
 近A
 遠A
-JA
+#JA
 J6A
 J2A
 J8A
-JB
+#JB
 J6B
-JC
+#JC
 J6C
 J2C
-DA
-DB
-DC
-@hisoutensokubot
+#DA
+#DB
+#DC
 10800
+
+蓬莱
+レミングス
