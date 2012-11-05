@@ -3,6 +3,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -163,6 +164,59 @@ public class Alice {
 		} catch (TwitterException e) {
 			e.printStackTrace(logOut);
 		}
+	}
+
+	private static class Token {
+		private static enum Type {
+			ID, NUMBER, STRING, EOF
+		}
+
+		public Type type;
+		public Object data;
+
+		public Token(Type type, Object data) {
+			this.type = type;
+			this.data = data;
+		}
+	}
+
+	private static List<Token> lexicalAnalysis(String src) {
+		List<Token> result = new ArrayList<Token>();
+		StringReader in = new StringReader(src);
+		while (true) {
+			try {
+				// <SKIP> = (space)*
+				do {
+					in.mark(1);
+				} while (Character.isWhitespace((char) in.read()));
+				in.reset();
+				int first = in.read();
+				if (first == -1) {
+					result.add(new Token(Token.Type.EOF, null));
+					break;
+				} else if ((first >= 'a' && first <= 'z')
+						|| (first >= 'A' && first <= 'Z')) {
+					StringBuilder buf = new StringBuilder();
+					buf.append(first);
+					while (true) {
+						in.mark(1);
+						int c = in.read();
+						if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
+								|| (c >= '0' && c <= '9')) {
+							buf.append(c);
+						} else {
+							in.reset();
+							break;
+						}
+					}
+					result.add(new Token(Token.Type.ID, buf.toString()));
+				} else if (first == '"') {
+
+				}
+			} catch (IOException e) {
+			}
+		}
+		return result;
 	}
 
 	private static void search() {
