@@ -178,6 +178,11 @@ public class Alice {
 			this.type = type;
 			this.data = data;
 		}
+
+		@Override
+		public String toString() {
+			return "[type=" + type + ", data=" + data + "]";
+		}
 	}
 
 	private static List<Token> lexicalAnalysis(String src) {
@@ -197,13 +202,13 @@ public class Alice {
 				} else if ((first >= 'a' && first <= 'z')
 						|| (first >= 'A' && first <= 'Z')) {
 					StringBuilder buf = new StringBuilder();
-					buf.append(first);
+					buf.append((char) first);
 					while (true) {
 						in.mark(1);
 						int c = in.read();
 						if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
 								|| (c >= '0' && c <= '9')) {
-							buf.append(c);
+							buf.append((char) c);
 						} else {
 							in.reset();
 							break;
@@ -319,75 +324,47 @@ public class Alice {
 		System.out.println("\tManual tweet mode.");
 	}
 
+	// TODO
 	public static void main(String[] args) {
-		Set<String> argSet = new HashSet<String>(Arrays.asList(args));
-
-		sin = new Scanner(System.in);
-
-		Date nowDate = new Date();
-		String nowStr = String.format("%1$tY%1$tm%1$td", nowDate);
-		File logDir = new File("log");
-		logDir.mkdir();
-		String logFileName = nowStr + ".log";
-		try {
-			Writer w = new OutputStreamWriter(new FileOutputStream(new File(
-					logDir, logFileName), true), "UTF-8");
-			logOut = new PrintWriter(w);
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		logOut.printf("Start (%1$tF %1$tT)%n", nowDate);
-
-		try {
-			if (argSet.isEmpty()) {
-				printlnBoth("No options. Use --help.");
-			}
-			if (argSet.remove("--help")) {
-				logOut.println("Help");
-				help();
-			}
-
-			twitter = new TwitterFactory().getInstance();
-			loadList();
-			myRecents = twitter.getUserTimeline(new Paging(1, 10));
-			logOut.printf("Get user timeline (%d)%n", myRecents.size());
-
-			if (argSet.remove("--itweet")) {
-				logOut.println("Interactive tweet mode.");
-				itweet();
-			}
-			if (argSet.remove("--mtweet")) {
-				logOut.println("Manual tweet mode.");
-				mtweet();
-			}
-			if (argSet.remove("--auto-reply")) {
-				logOut.println("Auto reply");
-				autoReply();
-			}
-			if (argSet.remove("--random-tweet")) {
-				logOut.println("Random tweet");
-				randomTweet();
-			}
-			if (argSet.remove("--auto-follow")) {
-				logOut.println("Auto follow");
-				autoFollow();
-			}
-			if (argSet.remove("--search")) {
-				logOut.println("Search");
-				search();
-			}
-			for (String arg : argSet) {
-				printlnBoth("Warning: unknown argument " + arg);
-			}
-		} catch (Exception e) {
-			e.printStackTrace(logOut);
-		}
-
-		logOut.printf("End (%1$tF %1$tT)%n", System.currentTimeMillis());
-		logOut.println();
-		logOut.close();
+		System.out.println(lexicalAnalysis("rp abc"));
 	}
+
+	/*
+	 * public static void main(String[] args) { Set<String> argSet = new
+	 * HashSet<String>(Arrays.asList(args));
+	 * 
+	 * sin = new Scanner(System.in);
+	 * 
+	 * Date nowDate = new Date(); String nowStr =
+	 * String.format("%1$tY%1$tm%1$td", nowDate); File logDir = new File("log");
+	 * logDir.mkdir(); String logFileName = nowStr + ".log"; try { Writer w =
+	 * new OutputStreamWriter(new FileOutputStream(new File( logDir,
+	 * logFileName), true), "UTF-8"); logOut = new PrintWriter(w); } catch
+	 * (IOException e) { e.printStackTrace(); System.exit(1); }
+	 * logOut.printf("Start (%1$tF %1$tT)%n", nowDate);
+	 * 
+	 * try { if (argSet.isEmpty()) { printlnBoth("No options. Use --help."); }
+	 * if (argSet.remove("--help")) { logOut.println("Help"); help(); }
+	 * 
+	 * twitter = new TwitterFactory().getInstance(); loadList(); myRecents =
+	 * twitter.getUserTimeline(new Paging(1, 10));
+	 * logOut.printf("Get user timeline (%d)%n", myRecents.size());
+	 * 
+	 * if (argSet.remove("--itweet")) {
+	 * logOut.println("Interactive tweet mode."); itweet(); } if
+	 * (argSet.remove("--mtweet")) { logOut.println("Manual tweet mode.");
+	 * mtweet(); } if (argSet.remove("--auto-reply")) {
+	 * logOut.println("Auto reply"); autoReply(); } if
+	 * (argSet.remove("--random-tweet")) { logOut.println("Random tweet");
+	 * randomTweet(); } if (argSet.remove("--auto-follow")) {
+	 * logOut.println("Auto follow"); autoFollow(); } if
+	 * (argSet.remove("--search")) { logOut.println("Search"); search(); } for
+	 * (String arg : argSet) { printlnBoth("Warning: unknown argument " + arg);
+	 * } } catch (Exception e) { e.printStackTrace(logOut); }
+	 * 
+	 * logOut.printf("End (%1$tF %1$tT)%n", System.currentTimeMillis());
+	 * logOut.println(); logOut.close(); }
+	 */
 
 	/*
 	 * println to System.out and logOut
