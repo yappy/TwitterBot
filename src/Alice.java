@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
+import twitter4j.DirectMessage;
 import twitter4j.IDs;
 import twitter4j.Paging;
 import twitter4j.Query;
@@ -164,6 +165,20 @@ public class Alice {
 		} catch (TwitterException e) {
 			e.printStackTrace(logOut);
 		}
+	}
+
+	private static void processDMCommand() {
+		try {
+			List<DirectMessage> dmList = twitter.getDirectMessages();
+			System.out.println(dmList.size());
+			for (DirectMessage dm : dmList) {
+				System.out.println(dm.getText());
+			}
+		} catch (TwitterException e) {
+			e.printStackTrace();
+			e.printStackTrace(logOut);
+		}
+
 	}
 
 	private static class Token {
@@ -356,13 +371,6 @@ public class Alice {
 	}
 
 	public static void main(String[] args) {
-		try {
-			System.out.println(lexicalAnalysis("rp 123456789 \"Alice\""));
-		} catch (DMException e) {
-			e.printStackTrace();
-		}
-		System.exit(0);
-
 		Set<String> argSet = new HashSet<String>(Arrays.asList(args));
 
 		sin = new Scanner(System.in);
@@ -395,6 +403,15 @@ public class Alice {
 			loadList();
 			myRecents = twitter.getUserTimeline(new Paging(1, 10));
 			logOut.printf("Get user timeline (%d)%n", myRecents.size());
+
+			// TODO test
+			try {
+				System.out.println(lexicalAnalysis("rp 123456789 \"Alice\""));
+				processDMCommand();
+			} catch (DMException e) {
+				e.printStackTrace();
+			}
+			System.exit(0);
 
 			if (argSet.remove("--itweet")) {
 				logOut.println("Interactive tweet mode.");
