@@ -1,31 +1,31 @@
-* how to build
+# how to build
 $ ant
 
-** other targets
+## other targets
 $ ant clean
 $ ant rebuild
 
-** requirements
+## requirements
 - JDK 6 or later
 - Ant (Eclipse-included also OK)
 
 
-* how to execute
+# how to execute
 For executing, "twitter4j.properties" is required.
 Template is "template.txt".
 
-$ java -jar alice.jar [options...]
+> $ java -jar alice.jar [options...]
 
 
-* tweet list
+# tweet list
 List is "list.txt".
 Comments begin with "#".
 
 
-* log
+# log
 Logs will be output to "log/yyyymmdd.log".
 
 
-* crontab
+# crontab
 crontab example is "crontab.txt".
 
